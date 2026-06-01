@@ -1,11 +1,14 @@
 includes:
     - vendor/larastan/larastan/extension.neon
+
 parameters:
     paths:
         - app/
+
     level: 5
     
     treatPhpDocTypesAsCertain: false
+    reportUnmatchedIgnoredErrors: false
+
     ignoreErrors:
         - '#Cannot call method format\(\) on string\.#'
-        - '#Instanceof between string and Carbon\\Carbon will always evaluate to false\.#'
