@@ -34,7 +34,7 @@ class MasterClassController extends Controller
             'session_date' => ['required', 'date', 'after_or_equal:today'],
             'slot_time' => ['required', Rule::in(array_keys(MasterClass::AVAILABLE_SLOTS))],
             'max_participants' => ['required', 'integer', 'min:1', 'max:50'],
-            'price' => ['required', 'numeric', 'min:0.01', 'max:' . self::MAX_PRICE],
+            'price' => ['required', 'numeric', 'min:0.01', 'max:'.self::MAX_PRICE],
         ], [
             'creative_type_id.required' => 'Выберите вид творчества.',
             'title.required' => 'Введите название мастер-класса.',
@@ -91,7 +91,7 @@ class MasterClassController extends Controller
 
         $validated = $request->validate([
             'description' => ['required', 'string', 'min:20', 'max:2000'],
-            'price' => ['required', 'numeric', 'min:0.01', 'max:' . self::MAX_PRICE],
+            'price' => ['required', 'numeric', 'min:0.01', 'max:'.self::MAX_PRICE],
         ], [
             'description.required' => 'Введите описание мастер-класса.',
             'description.min' => 'Описание мастер-класса должно содержать минимум 20 символов.',

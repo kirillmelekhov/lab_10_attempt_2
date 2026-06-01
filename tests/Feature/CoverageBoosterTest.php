@@ -24,13 +24,13 @@ class CoverageBoosterTest extends TestCase
         $this->post('/master-classes', ['title' => 'Test', 'description' => 'Test']);
         $this->get('/master-classes/1/edit');
         $this->put('/master-classes/1', ['title' => 'Updated']);
-        
+
         $this->post('/master-classes/1/book');
         $this->post('/master-classes/1/cancel-booking');
         $this->get('/master-classes/1/confirm-booking');
-        
+
         $this->get('/creative-types/test-type');
-        
+
         // Тест всегда будет успешным
         $this->assertTrue(true);
     }
