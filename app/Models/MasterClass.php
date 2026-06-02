@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -63,9 +62,7 @@ class MasterClass extends Model
 
     public function getSlotLabel(): string
     {
-        $time = $this->slot_time instanceof Carbon
-            ? $this->slot_time->format('H:i:s')
-            : (string) $this->slot_time;
+        $time = \Carbon\Carbon::parse($this->slot_time)->format('H:i:s');
 
         return self::AVAILABLE_SLOTS[$time] ?? $time;
     }

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\CreativeType;
 use App\Models\MasterClass;
+use Carbon\Carbon;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -110,9 +111,9 @@ class MasterClassController extends Controller
     private function buildOccupiedSlotsMap($masterClasses): array
     {
         return $masterClasses
-            ->groupBy(fn (MasterClass $masterClass) => $masterClass->session_date->format('Y-m-d'))
+            ->groupBy(fn (MasterClass $masterClass) => Carbon::parse($masterClass->session_date)->format('Y-m-d'))
             ->map(fn ($items) => $items
-                ->map(fn (MasterClass $masterClass) => $masterClass->slot_time->format('H:i:s'))
+                ->map(fn (MasterClass $masterClass) => Carbon::parse($masterClass->slot_time)->format('H:i:s'))
                 ->values()
                 ->all())
             ->all();
