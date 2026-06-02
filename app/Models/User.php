@@ -14,6 +14,7 @@ class User extends Authenticatable
     use HasFactory, Notifiable;
 
     public const ROLE_VISITOR = 'visitor';
+
     public const ROLE_LEADER = 'leader';
 
     /** @use HasFactory<UserFactory> */

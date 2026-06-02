@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\CreativeType;
 use App\Models\MasterClass;
+use Carbon\Carbon;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -34,7 +35,7 @@ class MasterClassController extends Controller
             'session_date' => ['required', 'date', 'after_or_equal:today'],
             'slot_time' => ['required', Rule::in(array_keys(MasterClass::AVAILABLE_SLOTS))],
             'max_participants' => ['required', 'integer', 'min:1', 'max:50'],
-            'price' => ['required', 'numeric', 'min:0.01', 'max:' . self::MAX_PRICE],
+            'price' => ['required', 'numeric', 'min:0.01', 'max:'.self::MAX_PRICE],
         ], [
             'creative_type_id.required' => 'Выберите вид творчества.',
             'title.required' => 'Введите название мастер-класса.',
@@ -91,7 +92,7 @@ class MasterClassController extends Controller
 
         $validated = $request->validate([
             'description' => ['required', 'string', 'min:20', 'max:2000'],
-            'price' => ['required', 'numeric', 'min:0.01', 'max:' . self::MAX_PRICE],
+            'price' => ['required', 'numeric', 'min:0.01', 'max:'.self::MAX_PRICE],
         ], [
             'description.required' => 'Введите описание мастер-класса.',
             'description.min' => 'Описание мастер-класса должно содержать минимум 20 символов.',
@@ -110,9 +111,9 @@ class MasterClassController extends Controller
     private function buildOccupiedSlotsMap($masterClasses): array
     {
         return $masterClasses
-            ->groupBy(fn (MasterClass $masterClass) => $masterClass->session_date->format('Y-m-d'))
+            ->groupBy(fn (MasterClass $masterClass) => Carbon::parse($masterClass->session_date)->format('Y-m-d'))
             ->map(fn ($items) => $items
-                ->map(fn (MasterClass $masterClass) => $masterClass->slot_time->format('H:i:s'))
+                ->map(fn (MasterClass $masterClass) => Carbon::parse($masterClass->slot_time)->format('H:i:s'))
                 ->values()
                 ->all())
             ->all();
