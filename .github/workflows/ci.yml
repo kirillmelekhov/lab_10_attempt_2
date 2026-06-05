@@ -7,37 +7,9 @@ on:
     branches: [ "dev", "qa", "master", "development", "develop", "main", "uat" ]
 
 jobs:
-  lint-fix:
+  tests:
+    name: Тесты
     runs-on: ubuntu-latest
-    if: github.event_name == 'push' && !contains(fromJSON('["refs/heads/master", "refs/heads/main", "refs/heads/dev", "refs/heads/development", "refs/heads/develop", "refs/heads/qa", "refs/heads/uat"]'), github.ref)
-    steps:
-      - uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
-          token: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Setup PHP
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: '8.3'
-          tools: composer
-
-      - name: Install Dependencies
-        run: composer update -q --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
-
-      - name: Run Pint Auto-fix
-        run: vendor/bin/pint
-
-      - name: Commit and Push changes
-        run: |
-          git config --global user.name "github-actions[bot]"
-          git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          git add -A
-          git diff-index --quiet HEAD || (git commit -m "Auto-fix code styling" && git push)
-
-  test-and-lint:
-    runs-on: ubuntu-latest
-    # Only run tests on long-lived branches or PRs to them
     if: github.event_name == 'pull_request' || contains(fromJSON('["refs/heads/master", "refs/heads/main", "refs/heads/dev", "refs/heads/development", "refs/heads/develop", "refs/heads/qa", "refs/heads/uat"]'), github.ref)
     steps:
       - uses: actions/checkout@v3
@@ -66,14 +38,47 @@ jobs:
       - name: Execute Tests with Coverage
         run: php artisan test --coverage --min=50
 
+  static_analysis:
+    name: Статический анализ кода
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request' || contains(fromJSON('["refs/heads/master", "refs/heads/main", "refs/heads/dev", "refs/heads/development", "refs/heads/develop", "refs/heads/qa", "refs/heads/uat"]'), github.ref)
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          tools: composer
+
+      - name: Install Dependencies
+        run: composer update -q --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
+
       - name: Static Analysis (PHPStan)
         run: vendor/bin/phpstan analyse --memory-limit=2G
+
+  linting:
+    name: Linting
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request' || contains(fromJSON('["refs/heads/master", "refs/heads/main", "refs/heads/dev", "refs/heads/development", "refs/heads/develop", "refs/heads/qa", "refs/heads/uat"]'), github.ref)
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          tools: composer
+
+      - name: Install Dependencies
+        run: composer update -q --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
 
       - name: Linting (Pint)
         run: vendor/bin/pint --test
 
-  deploy-simulation:
-    needs: test-and-lint
+  deploy_simulation:
+    name: Симуляция деплоя
+    needs: [tests, static_analysis, linting]
     runs-on: ubuntu-latest
     if: github.event_name == 'push' && contains(fromJSON('["refs/heads/master", "refs/heads/main", "refs/heads/dev", "refs/heads/development", "refs/heads/develop", "refs/heads/qa", "refs/heads/uat"]'), github.ref)
     environment:
