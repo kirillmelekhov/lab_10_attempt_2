@@ -3,7 +3,6 @@
 namespace Tests\Feature;
 
 use App\Models\CreativeType;
-use App\Models\MasterClass;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -84,10 +83,10 @@ class ControllersTest extends TestCase
         $creativeType = CreativeType::create([
             'name' => 'Test Type',
             'slug' => 'test-type',
-            'description' => 'Test description'
+            'description' => 'Test description',
         ]);
 
-        $response = $this->get('/creative-types/' . $creativeType->slug);
+        $response = $this->get('/creative-types/'.$creativeType->slug);
         $response->assertStatus(200);
     }
 
@@ -97,7 +96,7 @@ class ControllersTest extends TestCase
         $creativeType = CreativeType::create([
             'name' => 'Test Type 2',
             'slug' => 'test-type-2',
-            'description' => 'Test description'
+            'description' => 'Test description',
         ]);
 
         $response = $this->actingAs($leader)->post('/master-classes', [
